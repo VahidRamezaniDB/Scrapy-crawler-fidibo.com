@@ -57,6 +57,203 @@ class FidiboScraperSpider(scrapy.Spider):
         ).extract_first()
 
         if book_type == "مطالعه نسخه نمونه":
+
+            output_dict["type"] = "کتاب الکترونیکی"
+
+            #Author Extraction Section Begin
+            author = response.xpath(
+                '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[1]/a/span/text()').getall()
+            if(len(author)==0 or author is None):
+                author = "اطلاعات موجود نیست"
+            else:
+                author = ', '.join(author)
+            
+            output_dict["author"] = author
+            #Author Extraction Section End
+            #Translator Extraction Section Begin
+            translator = response.xpath(
+                '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[2]/a/span/text()').getall()
+            if(len(translator)==0 or translator is None):
+                translator = "اطلاعات موجود نیست"
+            else:
+                translator = ', '.join(translator)
+            
+            output_dict["translator"] = translator
+            #Translator Extraction Section End
+            #Narrator Extraction Section Begin
+
+            output_dict["narrator"] = "اطلاعات موجود نیست"
+
+            #Narrator Extraction Section End
+            #Price Extraction Section Begin
+            price = response.xpath(
+                '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[1]/a/span/text()').extract_first()
+            if(price is None):
+                price = "اطلاعات موجود نیست"
+            else:
+                price = price.replace("تومان","",1)
+            
+            output_dict["price"] = price
+            #Price Extraction Section End
+            #Publisher Exctraction Section Begin
+
+            publisherIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[1]/img/@alt').get()
+            
+            if(publisherIndicator == "ناشر"):
+                publisher = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[1]/a/text()').extract_first()
+            else:
+                publisher = "اطلاعات موجود نیست"
+            
+            if(publisher is None):
+                publisher = "اطلاعات موجود نیست"
+            else:
+                #Publisher Normalization code goes here
+                pass
+
+            output_dict["publisher"] = publisher
+            #Publisher Extraction Section End
+            #Pvp Extraction Section Begin
+            pvpIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[2]/img/@alt').get()
+
+            if(pvpIndicator == "قیمت نسخه چاپی"):
+                pvp = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[2]/span/text()').extract_first()
+            else:
+                pvp = "اطلاعات موجود نیست"
+            
+            if(pvp is None):
+                pvp = "اطلاعات موجود نیست"
+            else:
+                #Pvp Normalization code goes here
+                pass
+
+            output_dict["pvp"] = pvp
+            #Pvp Extraction Section End
+            #Publish Date Extraction Section Begin
+            pdIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[3]/img/@alt').get()
+
+            if(pdIndicator == "تاریخ نشر"):
+                pdate = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[3]/span/text()').extract_first()
+            else:
+                pdate = "اطلاعات موجود نیست"
+            
+            if(pdate is None):
+                pdate = "اطلاعات موجود نیست"
+            
+            output_dict["publish date"] = pdate
+            #Publish Date Extraction Section End
+            #Language Extraction Section Begin
+
+            langIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[4]/img/@alt').get()
+
+            if(langIndicator == "زبان"):
+                language = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[4]/text()').extract_first()
+            else:
+                language = "اطلاعات موجود نیست"
+            
+            if(language is None):
+                language = "اطلاعات موجود نیست"
+
+            output_dict["language"] = language
+
+            #Language Extraction Section End
+            #size Extraction Section Begin
+
+            sizeIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[5]/img/@alt').get()
+
+            if(sizeIndicator == "حجم فایل"):
+                size = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[5]/text()').extract_first()
+            else:
+                size = "اطلاعات موجود نیست"
+            
+            if(size is None):
+                size = "اطلاعات موجود نیست"
+            else:
+                #size Normalization code goes here
+                pass
+
+            output_dict["size"] = size
+            #size Extraction Section End
+            #Pages Extraction Section Begin
+
+            pagesIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[6]/img/@alt').get()
+
+            if(pagesIndicator == "تعداد صفحات"):
+                pages = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[6]/text()').extract_first()
+            else:
+                pages = "اطلاعات موجود نیست"
+            
+            if(pages is None):
+                pages = "اطلاعات موجود نیست"
+            else:
+                #pages Normalization code goes here
+                pass
+
+            output_dict["page count"] = pages
+            #Pages Extraction Section End
+            #ISBN Extraction Section Begin
+
+            isbnIndicator = response.xpath(
+                '/html/body/main/div[2]/section/div/div/ul/li[7]/img/@alt').get()
+
+            if(isbnIndicator == "تعداد صفحات"):
+                ISBN = response.xpath(
+                    '/html/body/main/div[2]/section/div/div/ul/li[7]/label/text()').extract_first()
+            else:
+                ISBN = "اطلاعات موجود نیست"
+            
+            if(ISBN is None):
+                ISBN = "اطلاعات موجود نیست"
+
+            output_dict["ISBN"] = ISBN
+            #ISBN Extraction Section End
+            #Description Extraction Section Begin
+
+            description = response.xpath(
+                '/html/body/main/div[2]/article/section/div/section/div/p[1]/text()').get()
+            if(description is None):
+                description = response.xpath(
+                    '/html/body/main/div[2]/article/section/div/div/div[1]/p/text()').get()
+            if(description is None):
+                description = "اطلاعات موجود نیست"
+            output_dict["description"] = description
+
+            #Description Extraction Section End
+            #Category Extraction Section Begin
+
+            bookCategories = response.xpath(
+                '/html/body/div[1]/nav/ul/li/a/span/text()').getall()
+            if (bookCategories is None):
+                bookCategories = "اطلاعات موجود نیست"
+            else:
+                bookCategories.pop(0)
+                bookCategories.pop(len(bookCategories)-1)
+                bookCategories = ", ".join(bookCategories)
+
+            output_dict["category"] = bookCategories
+
+            #Category Extraction Section End
+            #Cover Extraction Section Begin
+
+            cover = response.xpath(
+                '/html/body/main/div[2]/article/div[1]/div/div[1]/div/img/@src').get()
+            if (cover is None):
+                cover = "اطلاعات موجود نیست"
+
+            output_dict["cover"] = bookCategories
+
+            #Cover Extraction Section End
             pass
         else:
             pass
