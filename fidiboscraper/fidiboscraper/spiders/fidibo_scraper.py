@@ -32,14 +32,14 @@ class FidiboScraperSpider(scrapy.Spider):
             url = urljoin(self.start_urls[0], item_url)
             yield scrapy.Request(url, callback=self.parse_book)
 
-        next_page = response.xpath(
-            '//*[@id="result"]/div[2]/ul/li/a/@href').extract()
+        # next_page = response.xpath(
+        #     '//*[@id="result"]/div[2]/ul/li/a/@href').extract()
 
-        next_page = urljoin(self.start_urls[0], next_page[-2])
+        # next_page = urljoin(self.start_urls[0], next_page[-2])
 
-        # If next_page have value
-        if next_page:
-            yield scrapy.Request(next_page, callback=self.parse_pages)
+        # # If next_page have value
+        # if next_page:
+        #     yield scrapy.Request(next_page, callback=self.parse_pages)
 
     def parse_book(self, response):
         output_dict = {}
@@ -56,7 +56,7 @@ class FidiboScraperSpider(scrapy.Spider):
             '/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/div[1]/a/text()'
         ).extract_first()
 
-        if book_type == "مطالعه نسخه نمونه":
+        if book_type is not None and "مطالعه" in book_type:
 
             output_dict["type"] = "کتاب الکترونیکی"
 
@@ -64,7 +64,7 @@ class FidiboScraperSpider(scrapy.Spider):
             author = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[1]/a/span/text()').getall()
             if(len(author)==0 or author is None):
-                author = "اطلاعات موجود نیست"
+                author = "--"
             else:
                 author = ', '.join(author)
             
@@ -74,7 +74,7 @@ class FidiboScraperSpider(scrapy.Spider):
             translator = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[2]/a/span/text()').getall()
             if(len(translator)==0 or translator is None):
-                translator = "اطلاعات موجود نیست"
+                translator = "--"
             else:
                 translator = ', '.join(translator)
             
@@ -82,14 +82,14 @@ class FidiboScraperSpider(scrapy.Spider):
             #Translator Extraction Section End
             #Narrator Extraction Section Begin
 
-            output_dict["narrator"] = "اطلاعات موجود نیست"
+            output_dict["narrator"] = "--"
 
             #Narrator Extraction Section End
             #Price Extraction Section Begin
             price = response.xpath(
-                '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[1]/a/span/text()').extract_first()
+                '/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/span/text()').get()
             if(price is None):
-                price = "اطلاعات موجود نیست"
+                price = "--"
             else:
                 price = price.replace("تومان","",1)
             
@@ -104,10 +104,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 publisher = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[1]/a/text()').extract_first()
             else:
-                publisher = "اطلاعات موجود نیست"
+                publisher = "--"
             
             if(publisher is None):
-                publisher = "اطلاعات موجود نیست"
+                publisher = "--"
             else:
                 #Publisher Normalization code goes here
                 pass
@@ -122,10 +122,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 pvp = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[2]/span/text()').extract_first()
             else:
-                pvp = "اطلاعات موجود نیست"
+                pvp = "--"
             
             if(pvp is None):
-                pvp = "اطلاعات موجود نیست"
+                pvp = "--"
             else:
                 #Pvp Normalization code goes here
                 pass
@@ -140,10 +140,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 pdate = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[3]/span/text()').extract_first()
             else:
-                pdate = "اطلاعات موجود نیست"
+                pdate = "--"
             
             if(pdate is None):
-                pdate = "اطلاعات موجود نیست"
+                pdate = "--"
             
             output_dict["publish date"] = pdate
             #Publish Date Extraction Section End
@@ -156,10 +156,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 language = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[4]/text()').extract_first()
             else:
-                language = "اطلاعات موجود نیست"
+                language = "--"
             
             if(language is None):
-                language = "اطلاعات موجود نیست"
+                language = "--"
 
             output_dict["language"] = language
 
@@ -173,10 +173,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 size = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[5]/text()').extract_first()
             else:
-                size = "اطلاعات موجود نیست"
+                size = "--"
             
             if(size is None):
-                size = "اطلاعات موجود نیست"
+                size = "--"
             else:
                 #size Normalization code goes here
                 pass
@@ -192,10 +192,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 pages = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[6]/text()').extract_first()
             else:
-                pages = "اطلاعات موجود نیست"
+                pages = "--"
             
             if(pages is None):
-                pages = "اطلاعات موجود نیست"
+                pages = "--"
             else:
                 #pages Normalization code goes here
                 pass
@@ -207,26 +207,37 @@ class FidiboScraperSpider(scrapy.Spider):
             isbnIndicator = response.xpath(
                 '/html/body/main/div[2]/section/div/div/ul/li[7]/img/@alt').get()
 
-            if(isbnIndicator == "تعداد صفحات"):
+            if(isbnIndicator == "شابک"):
                 ISBN = response.xpath(
                     '/html/body/main/div[2]/section/div/div/ul/li[7]/label/text()').extract_first()
             else:
-                ISBN = "اطلاعات موجود نیست"
+                ISBN = "--"
             
             if(ISBN is None):
-                ISBN = "اطلاعات موجود نیست"
+                ISBN = "--"
 
             output_dict["ISBN"] = ISBN
             #ISBN Extraction Section End
             #Description Extraction Section Begin
 
+            # description = response.xpath(
+            #     '/html/body/main/div[2]/article/section/div/section/div/p[1]/text()').get()
+            # if(description is None):
+            #     description = response.xpath(
+            #         '/html/body/main/div[2]/article/section/div/div/div[1]/p/text()').get()
+            # if(description is None):
+            #     description = "--"
+            # output_dict["description"] = description
+
             description = response.xpath(
-                '/html/body/main/div[2]/article/section/div/section/div/p[1]/text()').get()
-            if(description is None):
+                "/html/body/main/div[2]/article/section/div/div/div[1]/p/text()"
+            ).get()
+            if description is None:
                 description = response.xpath(
-                    '/html/body/main/div[2]/article/section/div/div/div[1]/p/text()').get()
-            if(description is None):
-                description = "اطلاعات موجود نیست"
+                    "/html/body/main/div[2]/article/section/div/section/div/p[1]/text()"
+                ).get()
+            if description is None:
+                description = "--"
             output_dict["description"] = description
 
             #Description Extraction Section End
@@ -235,10 +246,9 @@ class FidiboScraperSpider(scrapy.Spider):
             bookCategories = response.xpath(
                 '/html/body/div[1]/nav/ul/li/a/span/text()').getall()
             if (bookCategories is None):
-                bookCategories = "اطلاعات موجود نیست"
+                bookCategories = "--"
             else:
                 bookCategories.pop(0)
-                bookCategories.pop(len(bookCategories)-1)
                 bookCategories = ", ".join(bookCategories)
 
             output_dict["category"] = bookCategories
@@ -249,13 +259,13 @@ class FidiboScraperSpider(scrapy.Spider):
             cover = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[1]/div/img/@src').get()
             if (cover is None):
-                cover = "اطلاعات موجود نیست"
+                cover = "--"
 
-            output_dict["cover"] = bookCategories
+            output_dict["cover"] = cover
 
             #Cover Extraction Section End
             pass
-        else:
+        elif book_type is not None:
             output_dict['type'] = "کتاب صوتی"
 
 
@@ -263,7 +273,7 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul/li[1]/a/span/text()"
             ).getall()
             if author is None or len(author)==0:
-                author = "اطلاعات موجود نیست."
+                author = "--"
             else:
                 author = ','.join(author)            
             output_dict["author"] = author
@@ -273,7 +283,7 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul[1]/li[2]/a/span/text()"
             ).getall()
             if translator is None or len(translator)==0:
-                translator = "اطلاعات موجود نیست."
+                translator = "--"
             else:
                 translator = ','.join(translator)            
             output_dict["translator"] = translator
@@ -283,7 +293,7 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/ul[1]/li[3]/a/span/text()"
             ).getall()
             if narrator is None or len(narrator)==0:
-                narrator = "اطلاعات موجود نیست."
+                narrator = "--"
             else:
                 narrator = ','.join(narrator)            
             output_dict["narrator"] = narrator
@@ -293,7 +303,9 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/span/text()"
             ).get()
             if price is None:
-                price = "اطلاعات موجود نیست."
+                price = "--"
+            else:
+                price = price.replace("تومان","",1)
             output_dict["price"] = price
 
 
@@ -305,13 +317,13 @@ class FidiboScraperSpider(scrapy.Spider):
                     "/html/body/main/div[2]/section/div/div/ul/li[1]/a/text()"
                 ).get()
                 if publisher is None:
-                    publisher = "اطلاعات موجود نیست."    
+                    publisher = "--"    
                 output_dict["publisher"] = publisher
             else:
-                output_dict["publisher"] = "اطلاعات موجود نیست."
+                output_dict["publisher"] = "--"
 
             
-            output_dict["pvp"] = "اطلاعات موجود نیست."
+            output_dict["pvp"] = "--"
 
 
             publish_date_img = response.xpath(
@@ -322,10 +334,10 @@ class FidiboScraperSpider(scrapy.Spider):
                     "/html/body/main/div[2]/section/div/div/ul/li[2]/span/text()"
                 ).get()
                 if publish_date is None:
-                    publish_date = "اطلاعات موجود نیست."
+                    publish_date = "--"
                 output_dict["publish date"] = publish_date
             else:
-                output_dict["publish date"] = "اطلاعات موجود نیست."
+                output_dict["publish date"] = "--"
 
             
             language_img = response.xpath(
@@ -336,10 +348,10 @@ class FidiboScraperSpider(scrapy.Spider):
                     "/html/body/main/div[2]/section/div/div/ul/li[3]/text()"
                 ).get()
                 if language is None:
-                    language = "اطلاعات موجود نیست."
+                    language = "--"
                 output_dict["language"] = language
             else:
-                output_dict["language"] = "اطلاعات موجود نیست."
+                output_dict["language"] = "--"
             
 
             size_img = response.xpath(
@@ -350,14 +362,14 @@ class FidiboScraperSpider(scrapy.Spider):
                     "/html/body/main/div[2]/section/div/div/ul/li[4]/text()"
                 ).get()
                 if size is None:
-                    size = "اطلاعات موجود نیست."
+                    size = "--"
                 output_dict["size"] = size
             else:
-                output_dict["size"] = "اطلاعات موجود نیست."
+                output_dict["size"] = "--"
 
             
-            output_dict["page count"] = "اطلاعات موجود نیست."
-            output_dict["ISBN"] = "اطلاعات موجود نیست."
+            output_dict["page count"] = "--"
+            output_dict["ISBN"] = "--"
 
 
             description = response.xpath(
@@ -368,7 +380,7 @@ class FidiboScraperSpider(scrapy.Spider):
                     "/html/body/main/div[2]/article/section/div/section/div/p[1]/text()"
                 ).get()
             if description is None:
-                description = "اطلاعات موجود نیست."
+                description = "--"
             output_dict["description"] = description
 
 
@@ -376,10 +388,9 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/div[1]/nav/ul/li/a/span/text()"
             ).getall()
             if book_cat is None or len(book_cat) == 0:
-                book_cat = "اطلاعات موجود نیست."
+                book_cat = "--"
             else:
                 book_cat.pop(0)
-                book_cat.pop(len(book_cat)-1)
                 book_cat = ','.join(book_cat)
             output_dict["category"] = book_cat
 
@@ -388,7 +399,7 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/div[1]/div/div[1]/div/img[1]/@src"
             ).get()
             if cover is None:
-                cover = "اطلاعات موجود نیست."
+                cover = "--"
             output_dict["cover"] = cover
 
         yield output_dict
