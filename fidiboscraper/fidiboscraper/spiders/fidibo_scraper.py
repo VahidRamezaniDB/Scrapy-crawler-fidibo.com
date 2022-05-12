@@ -47,6 +47,13 @@ class FidiboScraperSpider(scrapy.Spider):
         if title is None:
             title = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/h1/text()').extract_first()
+        book_type = response.xpath(
+            '/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/div[1]/a/text()'
+        ).extract_first()
+        if book_type == "مطالعه نسخه نمونه":
+            pass
+        else:
+            pass
         yield {
             "title": title,
         }
