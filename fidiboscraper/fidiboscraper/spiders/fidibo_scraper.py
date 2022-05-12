@@ -167,6 +167,10 @@ class FidiboScraperSpider(scrapy.Spider):
                 "/html/body/main/div[2]/article/section/div/div/div[1]/p/text()"
             ).get()
             if description is None:
+                description = response.xpath(
+                    "/html/body/main/div[2]/article/section/div/section/div/p[1]/text()"
+                ).get()
+            if description is None:
                 description = "اطلاعات موجود نیست."
             output_dict["description"] = description
 
@@ -174,7 +178,7 @@ class FidiboScraperSpider(scrapy.Spider):
             book_cat = response.xpath(
                 "/html/body/div[1]/nav/ul/li/a/span/text()"
             ).getall()
-            if book_cat is None:
+            if book_cat is None or len(book_cat) == 0:
                 book_cat = "اطلاعات موجود نیست."
             else:
                 book_cat.pop(0)
