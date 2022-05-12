@@ -42,18 +42,23 @@ class FidiboScraperSpider(scrapy.Spider):
             yield scrapy.Request(next_page, callback=self.parse_pages)
 
     def parse_book(self, response):
+        output_dict = {}
+
         title = response.xpath(
             '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/h1/a/text()').extract_first()
         if title is None:
             title = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/h1/text()').extract_first()
+        
+        output_dict["title"] = title
+
         book_type = response.xpath(
             '/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/div[1]/a/text()'
         ).extract_first()
+
         if book_type == "مطالعه نسخه نمونه":
             pass
         else:
             pass
-        yield {
-            "title": title,
-        }
+        
+        yield output_dict
