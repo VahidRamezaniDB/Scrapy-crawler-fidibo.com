@@ -21,7 +21,7 @@ class FidiboScraperSpider(scrapy.Spider):
         for url in categories_urls:
             url = urljoin(response.url, url)
             yield scrapy.Request(url, callback=self.parse_pages)
-            break
+
 
     def parse_pages(self, response):
 
@@ -36,14 +36,14 @@ class FidiboScraperSpider(scrapy.Spider):
                 visited_urls.append(url)
                 yield scrapy.Request(url, callback=self.parse_book)
 
-        # next_page = response.xpath(
-        #     '//*[@id="result"]/div[2]/ul/li/a/@href').extract()
+        next_page = response.xpath(
+            '//*[@id="result"]/div[2]/ul/li/a/@href').extract()
 
-        # next_page = urljoin(self.start_urls[0], next_page[-2])
+        next_page = urljoin(self.start_urls[0], next_page[-2])
 
-        # # If next_page have value
-        # if next_page:
-        #     yield scrapy.Request(next_page, callback=self.parse_pages)
+        # If next_page have value
+        if next_page:
+            yield scrapy.Request(next_page, callback=self.parse_pages)
 
     def parse_book(self, response):
         output_dict = {}
