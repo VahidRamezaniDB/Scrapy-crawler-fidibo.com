@@ -50,7 +50,7 @@ class FidiboScraperSpider(scrapy.Spider):
             title = response.xpath(
                 '/html/body/main/div[2]/article/div[1]/div/div[2]/div/div/div[1]/h1/text()').extract_first()
         
-        output_dict["title"] = title
+        output_dict["title"] = normalize_title(title=title)
 
         book_type = response.xpath(
             '/html/body/main/div[2]/article/div[1]/div/div[3]/div/div/div[1]/a/text()'
@@ -150,150 +150,15 @@ class FidiboScraperSpider(scrapy.Spider):
                     ).get()
                     if pvp is None:    
                         pvp = "--"
+            publisher = normalize_publisher(publisher)
             output_dict["publisher"] = publisher
+            pvp = normalize_pvp(pvp)
             output_dict["pvp"] = pvp
             output_dict["publish date"] = publish_date
             output_dict["language"] = language
             output_dict["size"] = size
             output_dict["page count"] = page_count
             output_dict["ISBN"] = isbn
-
-
-
-
-            #Publisher Exctraction Section Begin
-
-            # publisherIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[1]/img/@alt').get()
-            
-            # if(publisherIndicator == "ناشر"):
-            #     publisher = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[1]/a/text()').extract_first()
-            # else:
-            #     publisher = "--"
-            
-            # if(publisher is None):
-            #     publisher = "--"
-            # else:
-            #     #Publisher Normalization code goes here
-            #     pass
-
-            # output_dict["publisher"] = publisher
-            # #Publisher Extraction Section End
-            # #Pvp Extraction Section Begin
-            # pvpIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[2]/img/@alt').get()
-
-            # if(pvpIndicator == "قیمت نسخه چاپی"):
-            #     pvp = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[2]/span/text()').extract_first()
-            # else:
-            #     pvp = "--"
-            
-            # if(pvp is None):
-            #     pvp = "--"
-            # else:
-            #     #Pvp Normalization code goes here
-            #     pass
-
-            # output_dict["pvp"] = pvp
-            # #Pvp Extraction Section End
-            # #Publish Date Extraction Section Begin
-            # pdIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[3]/img/@alt').get()
-
-            # if(pdIndicator == "تاریخ نشر"):
-            #     pdate = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[3]/span/text()').extract_first()
-            # else:
-            #     pdate = "--"
-            
-            # if(pdate is None):
-            #     pdate = "--"
-            
-            # output_dict["publish date"] = pdate
-            # #Publish Date Extraction Section End
-            # #Language Extraction Section Begin
-
-            # langIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[4]/img/@alt').get()
-
-            # if(langIndicator == "زبان"):
-            #     language = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[4]/text()').extract_first()
-            # else:
-            #     language = "--"
-            
-            # if(language is None):
-            #     language = "--"
-
-            # output_dict["language"] = language
-
-            # #Language Extraction Section End
-            # #size Extraction Section Begin
-
-            # sizeIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[5]/img/@alt').get()
-
-            # if(sizeIndicator == "حجم فایل"):
-            #     size = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[5]/text()').extract_first()
-            # else:
-            #     size = "--"
-            
-            # if(size is None):
-            #     size = "--"
-            # else:
-            #     #size Normalization code goes here
-            #     pass
-
-            # output_dict["size"] = size
-            # #size Extraction Section End
-            # #Pages Extraction Section Begin
-
-            # pagesIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[6]/img/@alt').get()
-
-            # if(pagesIndicator == "تعداد صفحات"):
-            #     pages = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[6]/text()').extract_first()
-            # else:
-            #     pages = "--"
-            
-            # if(pages is None):
-            #     pages = "--"
-            # else:
-            #     #pages Normalization code goes here
-            #     pass
-
-            # output_dict["page count"] = pages
-            # #Pages Extraction Section End
-            # #ISBN Extraction Section Begin
-
-            # isbnIndicator = response.xpath(
-            #     '/html/body/main/div[2]/section/div/div/ul/li[7]/img/@alt').get()
-
-            # if(isbnIndicator == "شابک"):
-            #     ISBN = response.xpath(
-            #         '/html/body/main/div[2]/section/div/div/ul/li[7]/label/text()').extract_first()
-            # else:
-            #     ISBN = "--"
-            
-            # if(ISBN is None):
-            #     ISBN = "--"
-
-            # output_dict["ISBN"] = ISBN
-            #ISBN Extraction Section End
-            #Description Extraction Section Begin
-
-            # description = response.xpath(
-            #     '/html/body/main/div[2]/article/section/div/section/div/p[1]/text()').get()
-            # if(description is None):
-            #     description = response.xpath(
-            #         '/html/body/main/div[2]/article/section/div/div/div[1]/p/text()').get()
-            # if(description is None):
-            #     description = "--"
-            # output_dict["description"] = description
 
             description = response.xpath(
                 "/html/body/main/div[2]/article/section/div/div/div[1]/p/text()"
@@ -429,75 +294,15 @@ class FidiboScraperSpider(scrapy.Spider):
                     ).get()
                     if pvp is None:    
                         pvp = "--"
+            publisher = normalize_publisher(publisher)
             output_dict["publisher"] = publisher
+            pvp = normalize_pvp(pvp)
             output_dict["pvp"] = pvp
             output_dict["publish date"] = publish_date
             output_dict["language"] = language
             output_dict["size"] = size
             output_dict["page count"] = page_count
             output_dict["ISBN"] = isbn
-
-            # publisher_img = response.xpath(
-            #     "/html/body/main/div[2]/section/div/div/ul/li[1]/img/@alt"
-            # ).get()
-            # if publisher_img == "ناشر":
-            #     publisher = response.xpath(
-            #         "/html/body/main/div[2]/section/div/div/ul/li[1]/a/text()"
-            #     ).get()
-            #     if publisher is None:
-            #         publisher = "--"    
-            #     output_dict["publisher"] = publisher
-            # else:
-            #     output_dict["publisher"] = "--"
-
-            
-            # output_dict["pvp"] = "--"
-
-
-            # publish_date_img = response.xpath(
-            #     "/html/body/main/div[2]/section/div/div/ul/li[2]/img/@alt"
-            # ).get()
-            # if publish_date_img == 'تاریخ نشر':
-            #     publish_date = response.xpath(
-            #         "/html/body/main/div[2]/section/div/div/ul/li[2]/span/text()"
-            #     ).get()
-            #     if publish_date is None:
-            #         publish_date = "--"
-            #     output_dict["publish date"] = publish_date
-            # else:
-            #     output_dict["publish date"] = "--"
-
-            
-            # language_img = response.xpath(
-            #     "/html/body/main/div[2]/section/div/div/ul/li[3]/img/@alt"
-            # ).get()
-            # if language_img == 'زبان':
-            #     language = response.xpath(
-            #         "/html/body/main/div[2]/section/div/div/ul/li[3]/text()"
-            #     ).get()
-            #     if language is None:
-            #         language = "--"
-            #     output_dict["language"] = language
-            # else:
-            #     output_dict["language"] = "--"
-            
-
-            # size_img = response.xpath(
-            #     "/html/body/main/div[2]/section/div/div/ul/li[4]/img/@alt"
-            # ).get()
-            # if size_img == "حجم فایل":
-            #     size = response.xpath(
-            #         "/html/body/main/div[2]/section/div/div/ul/li[4]/text()"
-            #     ).get()
-            #     if size is None:
-            #         size = "--"
-            #     output_dict["size"] = size
-            # else:
-            #     output_dict["size"] = "--"
-
-            
-            # output_dict["page count"] = "--"
-            # output_dict["ISBN"] = "--"
 
 
             description = response.xpath(
@@ -531,3 +336,33 @@ class FidiboScraperSpider(scrapy.Spider):
             output_dict["cover"] = cover
 
         yield output_dict
+
+def normalize_publisher(str):
+
+    str = str.replace(" انتشارات","",1)
+    str = str.replace("انتشارات ","",1)
+    str = str.replace("نشر ","",1)
+    str = str.replace(" نشر","",1)
+    str = str.replace(" گروه انتشارات","",1)
+    str = str.replace("گروه انتشارات ","",1)
+
+    return str
+
+def normalize_pvp(pvprice):
+
+    pvprice = pvprice.replace(" قیمت نسخه چاپی","",1)
+    pvprice = pvprice.replace("قیمت نسخه چاپی ","",1)
+    pvprice = pvprice.replace("تومان ","",1)
+    pvprice = pvprice.replace(" تومان","",1)
+
+    return pvprice
+
+def normalize_title(title:str)->str:
+    useless_words = [
+        ' کتاب',' الکترونیکی',' دانلود',' صوتی',' نسخه',' PDF',' رمان',' پادکست',
+        'کتاب ','الکترونیکی ','دانلود ','صوتی ','نسخه ','PDF ','رمان ','پادکست ']
+    for word in useless_words:
+        title = title.replace(word,"",-1)
+    if "|" in title:
+        title = title[:title.index('|')]
+    return title
