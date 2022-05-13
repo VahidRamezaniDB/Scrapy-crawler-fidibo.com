@@ -28,9 +28,13 @@ class FidiboScraperSpider(scrapy.Spider):
         items_urls = response.xpath(
             '/html/body/main/div/article/div/div[2]/div[2]/section[2]/div[1]/div/div/span/a/@href').getall()
 
+        visited_urls = []
+
         for item_url in items_urls:
             url = urljoin(self.start_urls[0], item_url)
-            yield scrapy.Request(url, callback=self.parse_book)
+            if url not in visited_urls:
+                visited_urls.append(url)
+                yield scrapy.Request(url, callback=self.parse_book)
 
         # next_page = response.xpath(
         #     '//*[@id="result"]/div[2]/ul/li/a/@href').extract()
@@ -365,4 +369,7 @@ def normalize_title(title:str)->str:
         title = title.replace(word,"",-1)
     if "|" in title:
         title = title[:title.index('|')]
+    if "اثر" in title:
+        title = title.replace("اثر ","$",1)
+        title = title[:title.index('$')]
     return title
